@@ -1,25 +1,18 @@
-function TextonLibrary = getTextonLibrary()
+function TextonLibrary = getTextonLibrary(NumberofClusters)
 
 %% Initialization
-NumberofClusters = 8;
-TextonLibrary = [];
+S = 10;
+K = 10;
+NumberofFilters = S*K;
+TextonLibrary = zeros(NumberofClusters, NumberofFilters);
 
-%% Set the path to random folder
-dirname = '../random';
-d = dir(dirname);
+%% Build a Giant Feature Matrix
+disp('Build a Giant Matrix');
+GiantFeatureMatrix = buildGiantFeatureMatrix();
 
-
-for i = 3:length(d)
-
-%% Read the image of number 'index'
-fname = sprintf('%s\\%s',dirname,d(i).name);
-Image = imread(fname);
-
-%% Extract feature matrix and implement kmeans clustering
-GiantFeatureMatrix = extractResponseVectors(Image);
-[clusterresult, clustercenters] = kmeans(GiantFeatureMatrix, NumberofClusters);
-TextonLibrary = vertcat(TextonLibrary,clustercenters);
-
-end
+%% Implement k-means clustering
+disp('Implement k-means clustering');
+[clusterresult, clustercenters] = kmeans(GiantFeatureMatrix, NumberofClusters, 'EmptyAction','drop');
+TextonLibrary = clustercenters;
 
 end
