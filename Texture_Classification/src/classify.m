@@ -1,6 +1,12 @@
 function class = classify(im)
+% This function creates a histogram for the input image, and figures out
+% which class this image belongs to, using the Texton Library. The output
+% is the name of the class.
+% This function should be located in the same directory with
+% extractResponseVectors function.
+
 %% Initialization.
-NumberofClusters = 14;
+NumberofClusters = 16;
 
 %% Load TextonLibrary and class_histograms.
 load TextureLibrary.mat
@@ -17,6 +23,8 @@ ClassLibrary = vertcat(ClassLibrary,Straw_histogram');
 featureMatrix = extractResponseVectors(im);
 k = dsearchn(TextonLibrary,featureMatrix);
 im_hist = hist(k,NumberofClusters);
+
+% Normalize the histogram.
 im_hist_sum = sum(im_hist);
 im_hist = im_hist / im_hist_sum;
 

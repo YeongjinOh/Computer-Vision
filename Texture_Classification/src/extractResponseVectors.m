@@ -1,4 +1,8 @@
 function g = extractResponseVectors(Image)
+% This function apply the Gabor filter bank onto the give image and
+% extracts response vectors. The size of output matrix (which consists of
+% response row vectors of each pixel) is m by n, where n is the number of
+% Gabor filters in the bank and m is the total numbers of pixels in an image.
 
 %% Initialization
 S = 10;
@@ -18,7 +22,8 @@ img_rows = sz(1);
 img_cols = sz(2);
 
 % Set filter size
-filter_size = ceil(max(s_x,s_y))*2;
+filter_size_coeff = 1.5;
+filter_size = ceil(max(s_x,s_y) * filter_size_coeff)*2;
 [X Y] = meshgrid(-filter_size/2:filter_size/2,-filter_size/2:filter_size/2);
 
 %% Extract Response Vectors
@@ -36,11 +41,7 @@ for n = 0 : K-1
         I_real = imfilter(double(Image), real(g_mn), 'symmetric');
         I_mag = sqrt(I_complex.^2 + I_real.^2);
         
-        % To check the filtered image
-        % imshow(I_mag);
-        % pause(0.1);
-        
+        % Reshape the response of all pixels into one column vector.
         g(:,S*n+m+1) = reshape(I_mag,img_rows*img_cols,[]);
     end
 end
-
