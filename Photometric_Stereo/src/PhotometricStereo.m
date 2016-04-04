@@ -3,6 +3,13 @@ function PhotometricStereo(TargetImageName, RefImageName, NumberOfImages, isRefA
 % It is supposed to located in the same directory where the target folders
 % which are 'bottle', 'velvet',and 'wavy' exist.
 
+%% Initialization
+cd([TargetImageName,'\']);
+
+% The constant to distinguish between object and background in the
+% reference mask image
+ObjThreshold = 1;
+
 % Create object vectors
 RefObjVec = [createObjectVectors(RefImageName, NumberOfImages, 1); createObjectVectors(RefImageName, NumberOfImages, 2); createObjectVectors(RefImageName, NumberOfImages, 3)];
 TargetObjVec = [createObjectVectors(TargetImageName, NumberOfImages, 1); createObjectVectors(TargetImageName, NumberOfImages, 2); createObjectVectors(TargetImageName, NumberOfImages, 3)];
@@ -31,6 +38,13 @@ for i = 1:col
         cnt = cnt + 1;
     end
 end
+
+%% Implement closest-match between target object vectors and reference object vectors using kd-tree search.
+
+% IDX is a list of indices which specifies the index of the reference
+% object vector that corresponds to the appropriate target object vector.
+
+IDX = kdtreeidx2(RefObjVec, TargetObjVec);
 
 
 %% Calculate the surface normal in the reference object
@@ -124,6 +138,19 @@ else
             end
             RefNormal(i,j,:) = NormalVec/radius;
         end
+    end
+end
+
+%% Extract the normal vectors of the pixels representing the objects in the reference image.
+
+IndexedRefNormal = [(reshape(RefNormal(:,:,1),1,[])); reshape(RefNormal(:,:,2),1,[]); reshape(RefNormal(:,:,3),1,[])];
+[row, col] = size(IndexedRefNormal);
+% Count the number of erased columns
+cnt=0;
+for i = 1:col
+    if RefMaskVec(i) == 0
+        IndexedRefNormal(:,i-cnt)=[];
+        cnt = cnt+1;
     end
 end
 
