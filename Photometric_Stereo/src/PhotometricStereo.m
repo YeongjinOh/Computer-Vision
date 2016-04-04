@@ -46,7 +46,6 @@ end
 
 IDX = kdtreeidx2(RefObjVec, TargetObjVec);
 
-
 %% Calculate the surface normal in the reference object
 
 [row, col] = size(RefMask);
@@ -154,5 +153,28 @@ for i = 1:col
     end
 end
 
+%% Match the normal vector of the target object with that of the reference object using the indexed reference normal vectors and IDX.
+
+[row, col] = size(TargetMask);
+Normal = zeros(row,col,3);
+cnt=0;
+for j = 1:col
+    for i= 1:row
+        if TargetMask(i,j) ~= 0
+            cnt = cnt + 1;
+            Normal(i,j,:)=IndexedRefNormal(:,IDX(cnt));
+        end
+    end
+end
+
+
+%% Calculate Z and draw it.
+
+cd('..');
+nrows = 2^10;
+ncols = 2^10;
+[Ni,Z] = integrability2(Normal,[], nrows,ncols);
+view(20,70);
+surf(Z);
 
 end
