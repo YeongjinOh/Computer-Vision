@@ -7,6 +7,7 @@ function [objVectors] = createObjectVectors(ImageName, NumberOfImages, ColorInde
 
 for i=1:NumberOfImages
     img = imread([ImageName,num2str(i),'.png']);
+    img = im2double(img);
     imgVector = reshape(img(:,:,ColorIndex),1,[]);
     
     % initialize objVectors matrix with the first image vector

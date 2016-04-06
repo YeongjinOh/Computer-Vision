@@ -1,10 +1,8 @@
 function PhotometricStereo(TargetImageName, RefImageName, NumberOfImages, isRefASphere)
 % This function draw the shape of target object using photometric stereo.
-% It is supposed to located in the same directory where the target folders
-% which are 'bottle', 'velvet',and 'wavy' exist.
+% It is supposed to located in the same directory with input images.
 
 %% Initialization
-cd([TargetImageName,'\']);
 
 % The constant to distinguish between object and background in the
 % reference mask image
@@ -13,6 +11,7 @@ ObjThreshold = 1;
 % Create object vectors
 RefObjVec = [createObjectVectors(RefImageName, NumberOfImages, 1); createObjectVectors(RefImageName, NumberOfImages, 2); createObjectVectors(RefImageName, NumberOfImages, 3)];
 TargetObjVec = [createObjectVectors(TargetImageName, NumberOfImages, 1); createObjectVectors(TargetImageName, NumberOfImages, 2); createObjectVectors(TargetImageName, NumberOfImages, 3)];
+
 
 %% Extract the object vectors of the pixels representing the objects using mask which specifies the pixels that belong to the object within the image.
 
@@ -43,8 +42,9 @@ end
 
 % IDX is a list of indices which specifies the index of the reference
 % object vector that corresponds to the appropriate target object vector.
-
 IDX = kdtreeidx2(RefObjVec, TargetObjVec);
+
+
 
 %% Calculate the surface normal in the reference object
 
@@ -167,14 +167,26 @@ for j = 1:col
     end
 end
 
-
 %% Calculate Z and draw it.
 
-cd('..');
 nrows = 2^10;
 ncols = 2^10;
+% Caclulate Z
 [Ni,Z] = integrability2(Normal,[], nrows,ncols);
-view(20,70);
-surf(Z);
 
+% Draw Z
+subplot(1,2,1);
+surf(Z);
+subplot(1,2,2);
+surf(Z);
+for i = 1:180
+    subplot(1,2,1);
+    view(30+i,30);
+    axis image;
+    subplot(1,2,2);
+    view(30+i,30);
+    axis image;
+    light('Position',[0 0 100],'Style','local')
+    pause(0.03);
+end
 end
