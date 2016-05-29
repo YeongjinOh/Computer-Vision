@@ -13,9 +13,7 @@ theta = reshape(theta, numClasses, inputSize);
 
 numCases = size(data, 2);
 
-groundTruth = full(sparse(labels, 1:numCases, 1));
-cost = 0;
-
+groundTruth = full(sparse(labels, 1:numCases, 1));                          
 thetagrad = zeros(numClasses, inputSize);
 
 %% ---------- YOUR CODE HERE --------------------------------------
@@ -24,19 +22,30 @@ thetagrad = zeros(numClasses, inputSize);
 %                The groundTruth matrix might come in handy.
 
 
-% size(groundTruth) % 10 100
-% size(theta)       % 10 8
-% size(labels)      % 100 1
-% size(data)        % 8 10
-% size (thetagrad)  % 10 8  
-% h                 % 10 10
+% size(groundTruth) % 4 2000
+% size(theta)       % 4 400*3*3
+% size(labels)      % 2000 1
+% size(data)        % 400*3*3 2000
+% size (thetagrad)  % 4 400*3*3  
+% h                 % 4 4
 
 
 % note that if we subtract off after taking the exponent, as in the
 % text, we get NaN
 
 % ------------------------------------------------------------------
+% Compute cost
+prob = exp(theta*data);
+sumCol = sum(prob,1);
+% Normalize each column
+for i=1:size(prob,1)
+   prob(i,:) = prob(i,:)./sumCol; 
+end
+cost = -sum(sum(groundTruth.*log(prob))) / numCases  + lambda/2 * sum(sum(theta.^2));
+
 % Unroll the gradient matrices into a vector for minFunc
+thetagrad = (prob-groundTruth)*data'/numCases + lambda * theta;
 grad = [thetagrad(:)];
+
 end
 
